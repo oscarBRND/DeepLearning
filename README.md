@@ -7,10 +7,12 @@ This project aims to implement a wide range of deep learning algorithms from scr
 ## Completed
 
 - **Binary Classifier (Single Neuron)**: Implemented without external libraries, built entirely from scratch to understand fundamental classification principles
+- **Neural Network Implementation**: Build a multi-layer neural network with: (only for 2 layers)
+    - Backpropagation algorithm
 
 ## Next Steps
 
-- **Neural Network Implementation**: Build a multi-layer neural network with:
+- **Neural Network Implementation**: Build a multi-layer neural network with: (for n layers)
     - Backpropagation algorithm
     - Adam optimizer for training
 - **Convolutional Neural Networks (CNN)**: Implementation using Keras for image processing tasks
