@@ -1,10 +1,10 @@
-import neural_network as nn
+import neural_network_2_layers as nn
 from matplotlib.animation import FuncAnimation
 from matplotlib import pyplot as plt
 import numpy as np
 
 
-def animate_training_contour(X, y, losses, accuracies, params_history, iters_history):
+def animate_training_contour(X, y, losses, accuracies, params_history, iters_history, forward_propargation):
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     ax_loss, ax_acc, ax_db = axes
 
@@ -55,8 +55,9 @@ def animate_training_contour(X, y, losses, accuracies, params_history, iters_his
         ax_db.clear()  # on nettoie tout l'axe
 
         # Recalcule des prédictions sur la grille
-        activations = nn.forward_propagation(grid_points, params)
-        Z = activations["A2"].reshape(xx.shape)
+        activations, _ = forward_propargation(grid_points, params)
+        l = len(list(activations.keys()))
+        Z = activations["A" + str(l)].reshape(xx.shape)
 
         # Fond coloré (0 / 1)
         cf = ax_db.contourf(
@@ -88,7 +89,7 @@ def animate_training_contour(X, y, losses, accuracies, params_history, iters_his
         update,
         frames=len(params_history),
         init_func=init,
-        interval=10,
+        interval=2,
         blit=False
     )
 
@@ -96,7 +97,7 @@ def animate_training_contour(X, y, losses, accuracies, params_history, iters_his
     plt.show()
     return anim
 
-def show_graph(losses, accuracies, X, y, parameters):
+def show_graph(losses, accuracies, X, y, parameters, forward_propargation):
     plt.figure(figsize=(18, 5))
 
     # 1. Loss
@@ -125,8 +126,9 @@ def show_graph(losses, accuracies, X, y, parameters):
     )
 
     grid_points = np.c_[xx.ravel(), yy.ravel()].T  # (2, N_points)
-    activations = nn.forward_propagation(grid_points, parameters)
-    Z = activations["A2"].reshape(xx.shape)
+    activations, _ = forward_propargation(grid_points, parameters)
+    l = len(list(activations.keys()))
+    Z = activations["A" + str(l)].reshape(xx.shape)
 
     plt.contourf(xx, yy, Z, levels=[0, 0.5, 1], alpha=0.5, colors=['blue', 'orange'])
     plt.scatter(X[0, :], X[1, :], c=y.flatten(), edgecolors='k')

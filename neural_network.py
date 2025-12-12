@@ -1,130 +1,153 @@
-import numpy as np 
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from sklearn.datasets import make_blobs, make_circles
 from sklearn.metrics import accuracy_score
 from copy import deepcopy
 
-# Neural network implementation with two layers, the first layer containing 3 neurons and the second layer containing 1 neuron. 
-# The activation function used is Sigmoid.
-# Our dataset is a binary classification problem generated using make_blobs from sklearn. With 10,000 samples, 2 features, and 2 centers.
 
-# X, y = make_blobs(n_samples=10000, centers=2, n_features=2, random_state=42, cluster_std=1.5)
-# y = y.reshape(-1, 1)
-# X = X.T
+# -------- activations --------
+def sigmoid(Z):
+    return 1 / (1 + np.exp(-Z))
 
-X, y = make_circles(n_samples=1000, noise=0.1, factor=0.3, random_state=42)
-y = y.reshape(-1, 1)
-X = X.T
+def tanh(Z):
+    return np.tanh(Z)
 
-def initialize_parameters(n0, n1, n2):
+def relu(Z):
+    return np.maximum(0, Z)
+
+# =========================
+# Model
+# =========================
+def initialize_parameters(list_dimensions):
     """
-    
+    list_dimensions = [n0, n1, ..., nL]
+      n0: number of features
+      nL: output size
+    returns parameters dict with W1..WL and b1..bL
     """
-    W1 = np.random.randn(n1, n0)
-    b1 = np.random.randn(n1, 1)
-    W2 = np.random.randn(n2, n1)
-    b2 = np.random.randn(n2, 1)
-
-    parametres = {
-        "W1": W1,
-        "b1": b1,
-        "W2": W2,
-        "b2": b2
-    }
-    return parametres
+    L = len(list_dimensions) - 1  # number of weight layers
+    parameters = {}
+    for l in range(1, L + 1):
+        parameters["W" + str(l)] = np.random.randn(list_dimensions[l], list_dimensions[l - 1])
+        parameters["b" + str(l)] = np.random.randn(list_dimensions[l], 1)
+    return parameters
 
 
-def forward_propagation(X, parametres):
+def forward_propagation(X, parameters):
     """
-    Compute the output of the neural network model.
+    X shape: (n0, m)
+    returns:
+      activations: {"A1":..., ..., "AL":...}
+      caches: {"Z1":..., ..., "ZL":...}
     """
-    w1 = parametres["W1"]
-    b1 = parametres["b1"]
-    w2 = parametres["W2"]
-    b2 = parametres["b2"]
+    L = len(parameters) // 2
+    activations = {}
+    caches = {}
 
-    Z1 = w1.dot(X) + b1
-    A1 = 1 / (1 + np.exp(-Z1)) # Sigmoid activation
-    Z2 = w2.dot(A1) + b2
-    A2 = 1 / (1 + np.exp(-Z2)) # Sigmoid activation
+    A_prev = X
+    for l in range(1, L + 1):
+        W = parameters["W" + str(l)]
+        b = parameters["b" + str(l)]
+        Z = W.dot(A_prev) + b
+        A = sigmoid(Z)
 
-    activations = {
-        "A1": A1,
-        "A2": A2
-    }
+        caches["Z" + str(l)] = Z
+        activations["A" + str(l)] = A
+        A_prev = A
 
-    return activations
+    return activations, caches
 
 def backpropagation(X, Y_true, activations, parameters):
     """
-    Compute the gradients of the loss with respect to W and b.
+    Binary cross-entropy with sigmoid output:
+      dZ_L = A_L - Y
+    Shapes:
+      Y_true: (m, 1)
+      A_L: (1, m) if output layer size is 1
     """
-    
-    m = Y_true.shape[0]
-    A1 = activations["A1"]
-    A2 = activations["A2"]
-    w2 = parameters["W2"]
+    gradients = {}
+    m = X.shape[1]
+    L = len(parameters) // 2
 
-    dZ2 = A2 - Y_true.T
-    dW2 = (1/m)*dZ2.dot(A1.T)
-    db2 = (1/m)*np.sum(dZ2, axis=1, keepdims=True)
-    dZ1 = np.dot(w2.T, dZ2) * A1 * (1 - A1)
-    dW1 = (1/m)*dZ1.dot(X.T)
-    db1 = (1/m)*np.sum(dZ1, axis=1, keepdims=True)
+    # Output layer
+    A_L = activations["A" + str(L)]          # (nL, m)
+    dZ = A_L - Y_true.T                      # (nL, m)
 
-    gradients = {
-        "dW1": dW1,
-        "db1": db1,
-        "dW2": dW2,
-        "db2": db2
-    }
+    for l in range(L, 0, -1):
+        A_prev = X if l == 1 else activations["A" + str(l - 1)]  # (n_{l-1}, m)
+
+        gradients["dW" + str(l)] = (1 / m) * dZ.dot(A_prev.T)
+        gradients["db" + str(l)] = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
+
+        if l > 1:
+            A_prev_act = activations["A" + str(l - 1)]
+            dZ = parameters["W" + str(l)].T.dot(dZ) * A_prev_act * (1 - A_prev_act)
 
     return gradients
 
-def gradients_descent(parameters, gradients, learning_rate):
-    """
-    Update weights W and bias b using gradient descent.
-    """
-    parameters["W1"] -= learning_rate * gradients["dW1"]
-    parameters["b1"] -= learning_rate * gradients["db1"]
-    parameters["W2"] -= learning_rate * gradients["dW2"]
-    parameters["b2"] -= learning_rate * gradients["db2"]
+def gradient_descent(parameters, gradients, learning_rate):
+    L = len(parameters) // 2
+    for l in range(1, L + 1):
+        parameters["W" + str(l)] -= learning_rate * gradients["dW" + str(l)]
+        parameters["b" + str(l)] -= learning_rate * gradients["db" + str(l)]
     return parameters
 
-def predict(X, parameters):
-    activations = forward_propagation(X, parameters)
-    Y_pred = activations["A2"]
-    return Y_pred >=0.5
+def predict_proba(X, parameters):
+    L = len(parameters) // 2
+    activations, _ = forward_propagation(X, parameters)
+    return activations["A" + str(L)]  # (1, m) if last layer is 1
+
+def predict(X, parameters, threshold=0.5):
+    Y_pred = predict_proba(X, parameters)
+    return (Y_pred >= threshold)
 
 def NLL(Y_true, Y_pred):
-    m = Y_true.shape[0]
+    """
+    Binary cross-entropy.
+    Y_true: (m, 1)
+    Y_pred: (1, m) or (m, 1)
+    """
     eps = 1e-15
-    Y_pred = Y_pred.T
-    Y_pred = np.clip(Y_pred, eps, 1-eps)
-    loss = - (1/m) * np.sum(Y_true * np.log(Y_pred) + (1 - Y_true) * np.log(1 - Y_pred))
-    return loss
+    if Y_pred.shape[0] == 1:
+        Yp = Y_pred.T  # (m, 1)
+    else:
+        Yp = Y_pred    # (m, 1)
+
+    Yp = np.clip(Yp, eps, 1 - eps)
+    m = Y_true.shape[0]
+    return - (1 / m) * np.sum(Y_true * np.log(Yp) + (1 - Y_true) * np.log(1 - Yp))
 
 
-def artificial_neuron(X, y, learning_rate=0.01, n_iterations=10000, n1=3, record_every=10):
-    n_features = X.shape[0]
-    parameters = initialize_parameters(n_features, n1, 1)
-    
+def neural_network(X, y, list_dimensions, learning_rate=0.01, n_iterations=10000, record_every=10):
+
+    # Architecture summary
+    print("Neural network architecture:")
+    for i in range(len(list_dimensions)):
+        if i == 0:
+            print(f"  Input layer      : {list_dimensions[i]} features")
+        elif i == len(list_dimensions) - 1:
+            print(f"  Output layer     : {list_dimensions[i]} neuron(s)")
+        else:
+            print(f"  Hidden layer {i}    : {list_dimensions[i]} neuron(s)")
+    parameters = initialize_parameters(list_dimensions)
+    L = len(parameters) // 2
+
     losses = []
     accuracies = []
-    params_history = []   # pour l'animation
-    iters_history = []    # pour afficher le n° d'itération sur l'animation
-    
-    for i in range(n_iterations):
-        activations = forward_propagation(X, parameters)
-        gradients = backpropagation(X, y, activations, parameters)
-        parameters = gradients_descent(parameters, gradients, learning_rate)
+    params_history = []
+    iters_history = []
 
-        loss = NLL(y, activations["A2"])
+    for i in range(n_iterations):
+        activations, _ = forward_propagation(X, parameters)
+        loss = NLL(y, activations["A" + str(L)])
+
+        gradients = backpropagation(X, y, activations, parameters)
+        parameters = gradient_descent(parameters, gradients, learning_rate)
+
         y_pred_labels = predict(X, parameters)
         acc = accuracy_score(y.flatten(), y_pred_labels.flatten())
-        
-        # On enregistre à chaque itération, ou bien toutes les record_every itérations
+
         if i % record_every == 0:
             losses.append(loss)
             accuracies.append(acc)
@@ -133,5 +156,11 @@ def artificial_neuron(X, y, learning_rate=0.01, n_iterations=10000, n1=3, record
 
         if i % 100 == 0:
             print(f"Iteration {i}, Loss: {loss:.4f}, Accuracy: {acc:.4f}")
-    
+
     return parameters, losses, accuracies, params_history, iters_history
+
+# =========================
+# Example run
+# =========================
+# For your case: 2 features -> 3 hidden -> 1 output
+# params, losses, accs, hist, it_hist = neural_network(X, y, [2, 3, 1], learning_rate=0.1, n_iterations=5000, record_every=10)
