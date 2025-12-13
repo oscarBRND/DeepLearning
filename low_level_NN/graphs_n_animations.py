@@ -1,4 +1,4 @@
-import neural_network_2_layers as nn
+import old.neural_network_2_layers as nn
 from matplotlib.animation import FuncAnimation
 from matplotlib import pyplot as plt
 import numpy as np

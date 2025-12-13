@@ -1,5 +1,5 @@
-import neural_network_2_layers as nn2
-from neural_network_2_layers import forward_propagation
+import old.neural_network_2_layers as nn2
+from old.neural_network_2_layers import forward_propagation
 import neural_network as nn
 from neural_network import forward_propagation
 import graphs_n_animations as ga

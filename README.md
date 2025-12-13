@@ -51,13 +51,8 @@ The network has been **generalized to support arbitrary depth**:
   - optimization
 
 #### Supported Activation Functions
-The implementation now supports multiple activation functions:
-
+The implementation supports activation functions:
 - **Sigmoid**
-- **Tanh**
-- **ReLU**
-
-Each activation is handled consistently in both the forward and backward passes, enabling experimentation with different architectures and learning behaviors.
 
 ---
 
@@ -75,24 +70,6 @@ Tracked metrics:
 
 ## Next Steps
 
-### Cleaner & Object-Oriented Design
-Refactor the current functional implementation into a **clean, extensible OOP design**:
-
-- `Layer` abstraction  
-- `NeuralNetwork` class  
-- Plug-and-play activations and optimizers  
-
----
-
-### Optimization Improvements
-Implement more advanced optimizers:
-
-- Momentum-based Gradient Descent  
-- RMSProp  
-- Adam  
-
----
-
 ### Computer Vision (CNNs)
 Introduce convolutional neural networks using a deep learning framework (PyTorch or Keras):
 
@@ -102,10 +79,9 @@ Introduce convolutional neural networks using a deep learning framework (PyTorch
 ---
 
 ### Future Explorations
-- Batch Normalization  
-- Residual Networks (ResNet)  
-- Deeper architectures & training stability  
-- Regularization techniques  
+- Image segmentation
+- NLP *Natural Language Processing*
+- SSL *self supervised learning*
 
 ---
 
@@ -113,4 +89,5 @@ Introduce convolutional neural networks using a deep learning framework (PyTorch
 
 The goal of this project is to develop **a strong, practical understanding of deep learning from first principles**, observe training dynamics in detail, and progressively transition toward **industrial-grade architectures and workflows**.
 
-This repository serves both as a learning tool and a technical showcase of low-level deep learning implementations.
+This repository serves both as a learning tool and a technical showcase of low-level deep learning implementations, as well as practical projects leveraging widely used frameworks such as Keras, PyTorch, and TensorFlow.
+
