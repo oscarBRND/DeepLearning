@@ -4,11 +4,48 @@ from matplotlib.animation import FuncAnimation
 from sklearn.datasets import make_blobs, make_circles
 from sklearn.metrics import accuracy_score
 from copy import deepcopy
+from abc import ABC, abstractmethod
+
+# -------- Layers class -------
+class Layer(ABC):
+    """
+    Classe abstraite pour toute couche du réseau.
+    """
+
+    @abstractmethod
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        """
+        Passage avant.
+        x : entrée (batch_size, ...)
+        retourne : sortie
+        """
+        pass
+
+    @abstractmethod
+    def backward(self, grad_output: np.ndarray) -> np.ndarray:
+        """
+        Rétropropagation.
+        grad_output : ∂L/∂(sortie)
+        retourne : ∂L/∂(entrée)
+        """
+        pass
+
+    def parameters(self) -> list[np.ndarray]:
+        """
+        Paramètres entraînables de la couche.
+        Par défaut : aucun (ReLU, Sigmoid, etc.).
+        """
+        return []
+
+    def gradients(self) -> list[np.ndarray]:
+        """
+        Gradients associés aux paramètres.
+        Même ordre que `parameters()`.
+        """
+        return []
 
 
-# -------- activations --------
-def sigmoid(Z):
-    return 1 / (1 + np.exp(-Z))
+
 
 # =========================
 # Model
@@ -28,7 +65,7 @@ def initialize_parameters(list_dimensions):
     return parameters
 
 
-def forward_propagation(X, parameters):
+def forward_propagation(X, parameters, list_activation_function):
     """
     X shape: (n0, m)
     returns:
@@ -43,16 +80,15 @@ def forward_propagation(X, parameters):
     for l in range(1, L + 1):
         W = parameters["W" + str(l)]
         b = parameters["b" + str(l)]
-        Z = W.dot(A_prev) + b
-        A = sigmoid(Z)
-
+        layer_l = layer(W.shape[1], W.shape[0], list_activation_function[l - 1])
+        A, Z = layer_l.forward(A_prev, W, b)
         caches["Z" + str(l)] = Z
         activations["A" + str(l)] = A
         A_prev = A
 
     return activations, caches
 
-def backpropagation(X, Y_true, activations, parameters):
+def backpropagation(X, Y_true, activations, parameters, list_activation_function):
     """
     Binary cross-entropy with sigmoid output:
       dZ_L = A_L - Y
@@ -152,9 +188,3 @@ def neural_network(X, y, list_dimensions, learning_rate=0.01, n_iterations=10000
             print(f"Iteration {i}, Loss: {loss:.4f}, Accuracy: {acc:.4f}")
 
     return parameters, losses, accuracies, params_history, iters_history
-
-# =========================
-# Example run
-# =========================
-# For your case: 2 features -> 3 hidden -> 1 output
-# params, losses, accs, hist, it_hist = neural_network(X, y, [2, 3, 1], learning_rate=0.1, n_iterations=5000, record_every=10)
