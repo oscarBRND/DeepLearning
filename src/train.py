@@ -1,10 +1,3 @@
-import numpy as np
-from src.model import Sequential
-from src.loss import NLL
-from src.optimizer import SGD
-from src.layers import Layer, Dense
-from src.initializers import XavierInitializer
-
 def train_step(model, loss_fn, optimizer, x, y):
     y_pred = model.forward(x)
     loss = loss_fn.forward(y, y_pred)

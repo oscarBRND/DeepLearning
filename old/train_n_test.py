@@ -1,8 +1,6 @@
 import old.neural_network_2_layers as nn2
 from old.neural_network_2_layers import forward_propagation
-import neural_network as nn
-from neural_network import forward_propagation
-import graphs_n_animations as ga
+import low_level_NN.old.graph_n_animation as ga
 from sklearn.datasets import make_circles
 
 
@@ -13,11 +11,11 @@ X = X.T
 list_dimension = [2, 5, 5, 1]
 
 # parameters, losses, accuracies, params_history, iters_history = nn2.artificial_neuron(X, y, learning_rate=0.1, n_iterations=10000, n1=5, record_every=10)
-parameters, losses, accuracies, params_history, iters_history = nn.neural_network(X, y, list_dimension, learning_rate=0.1, n_iterations=10000, record_every=10)
+parameters, losses, accuracies, params_history, iters_history = nn2.neural_network(X, y, learning_rate=0.1, n_iterations=10000, record_every=10)
 
 # Graphiques de l'entraînement
-ga.show_graph(losses, accuracies, X, y, parameters, forward_propargation=nn.forward_propagation)
+ga.show_graph(losses, accuracies, X, y, parameters, forward_propargation=nn2.forward_propagation)
 
 # Animation de la frontière de décision pendant l'entraînement
-anim = ga.animate_training_contour(X, y, losses, accuracies, params_history, iters_history, forward_propargation=nn.forward_propagation)
+anim = ga.animate_training_contour(X, y, losses, accuracies, params_history, iters_history, forward_propargation=nn2.forward_propagation)
 anim.save('nn_training_contour.gif', fps=30)

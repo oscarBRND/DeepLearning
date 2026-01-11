@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from src.initializers import Initializer, XavierUniform
 
 # -------- Layers class -------
 class Layer(ABC):
@@ -39,12 +40,13 @@ class Layer(ABC):
         """
         return []
     
-class Dense(Layer):
 
-    def __init__(self, input_size: int, output_size: int, initializer) -> None:
+class Dense:
+    def __init__(self, input_size: int, output_size: int, initializer: Initializer | None = None) -> None:
         self.input_size = input_size
         self.output_size = output_size
-        self.initializer = initializer
+
+        self.initializer = initializer if initializer is not None else XavierUniform()
 
         self.W = self.initializer.init_weight((output_size, input_size), input_size, output_size)
         self.b = self.initializer.init_bias((output_size, 1))
