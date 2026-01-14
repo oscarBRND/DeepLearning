@@ -15,3 +15,7 @@ class SGD(Optimizer):
         for key in parameters.keys():
             updated_parameters[key] = parameters[key] - self.learning_rate * gradients[key]
         return updated_parameters
+    
+
+#TODO
+class Adam(Optimizer): ...

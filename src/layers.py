@@ -39,6 +39,9 @@ class Layer(ABC):
         Même ordre que `parameters()`.
         """
         return None
+
+#TODO
+class Dropout(Layer):...
     
 
 class Dense:
@@ -100,3 +103,9 @@ class Sigmoid(Activation):
     
     def backward(self, grad_output: np.ndarray) -> np.ndarray:
         return grad_output * self.output_cache * (1 - self.output_cache)
+    
+#TODO
+class Tanh(Activation): ...
+class LeakyReLU(Activation): ...
+
+

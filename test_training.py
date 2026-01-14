@@ -12,7 +12,10 @@ if __name__ == "__main__":
     x_train = X.T
 
 
-    model = Sequential([Dense(input_size=2, output_size=5, initializer=XavierUniform()), ReLU(), Dense(input_size=5, output_size=1, initializer=XavierUniform()), Sigmoid()])
+    model = Sequential([Dense(input_size=2, output_size=5, initializer=XavierUniform()), 
+                        ReLU(), 
+                        Dense(input_size=5, output_size=1, initializer=XavierUniform()), 
+                        Sigmoid()])
     loss_fn = BCE()
     optimizer = SGD(learning_rate=0.1)
     epochs = 10000

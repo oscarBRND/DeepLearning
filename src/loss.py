@@ -60,3 +60,9 @@ class CE(Loss):
         y_pred = np.clip(y_pred, eps, 1 - eps)
         grad = - (y_true / y_pred)
         return grad / y_true.shape[0]
+    
+
+#TODO
+class BinaryCrossEntropy(Loss):...
+class CategoricalCrossEntropy(Loss):...
+
