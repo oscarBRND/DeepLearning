@@ -13,5 +13,5 @@ class SGD(Optimizer):
     def update(self, parameters: dict[str, np.ndarray], gradients: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
         updated_parameters = {}
         for key in parameters.keys():
-            updated_parameters[key] = parameters[key] - self.learning_rate * gradients["d" + key]
+            updated_parameters[key] = parameters[key] - self.learning_rate * gradients[key]
         return updated_parameters

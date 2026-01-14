@@ -31,14 +31,14 @@ class Layer(ABC):
         Paramètres entraînables de la couche.
         Par défaut : aucun (ReLU, Sigmoid, etc.).
         """
-        return []
+        return None
 
     def gradients(self) -> list[np.ndarray]:
         """
         Gradients associés aux paramètres.
         Même ordre que `parameters()`.
         """
-        return []
+        return None
     
 
 class Dense:
@@ -77,8 +77,8 @@ class Dense:
         }
     def gradients(self) -> list[np.ndarray]:
         return {
-            "dW": self.grad_W,
-            "db": self.grad_b
+            "W": self.grad_W,
+            "b": self.grad_b
         }
 
 class Activation(Layer, ABC):
@@ -95,9 +95,8 @@ class ReLU(Activation):
     
 class Sigmoid(Activation):
     def forward(self, x: np.ndarray) -> np.ndarray:
-        self.output_cache = 1 / (1 + np.exp(-x))
+        self.output_cache = 1 / (1 + np.exp(-x)) 
         return self.output_cache
     
     def backward(self, grad_output: np.ndarray) -> np.ndarray:
-        grad_input = grad_output * self.output_cache * (1 - self.output_cache)
-        return grad_input
+        return grad_output * self.output_cache * (1 - self.output_cache)
