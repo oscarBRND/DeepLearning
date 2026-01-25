@@ -43,4 +43,4 @@ class Sequential:
             layer_params = layer.parameters()
             if layer_params is not None:
                 for name in layer_params.keys():
-                    layer_params[name] = updated_parameters[f"layer{i}.{name}"]
+                    setattr(layer, name, updated_parameters[f"layer{i}.{name}"])

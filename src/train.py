@@ -13,6 +13,5 @@ def train_step(model, loss_fn, optimizer, x, y):
 def train(model, loss_fn, optimizer, x_train, y_train, epochs: int = 100):
     for epoch in range(epochs):
         loss = train_step(model, loss_fn, optimizer, x_train, y_train)
-        print(f"Epoch {epoch + 1}, Loss: {loss}")
-        if epoch % 10 == 0:
+        if (epoch + 1) % 10 == 0:
             print(f"Epoch {epoch + 1}, Loss: {loss:.4f}")

@@ -42,7 +42,7 @@ class BCE(Loss):
         y_pred = np.clip(y_pred, eps, 1 - eps)
 
         grad = -(y_true / y_pred) + (1 - y_true) / (1 - y_pred)  # (1, m)
-        return grad / m
+        return grad
 
     
 class CE(Loss):
@@ -59,7 +59,7 @@ class CE(Loss):
         eps = 1e-15
         y_pred = np.clip(y_pred, eps, 1 - eps)
         grad = - (y_true / y_pred)
-        return grad / y_true.shape[0]
+        return grad
     
 
 #TODO
