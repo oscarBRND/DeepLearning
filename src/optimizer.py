@@ -7,6 +7,9 @@ class Optimizer(ABC):
         pass
 
 class SGD(Optimizer):
+    """
+    SGD stands for Stochastic Gradient Descent. It is an optimization algorithm used to minimize the loss function by iteratively updating the model parameters in the direction of the negative gradient of the loss function with respect to the parameters.
+    """
     def __init__(self, learning_rate: float = 0.01) -> None:
         self.learning_rate = learning_rate
 

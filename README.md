@@ -31,11 +31,11 @@ A fully manual neural network implementation including:
 
 #### Architecture
 <p align="center">
-  <img src="src/architecture.png" width="450">
+  <img src="assets/architecture.png" width="450">
 </p>
 
 #### Training Animation
-![Training Animation](src/nn_training_contour.gif)
+![Training Animation](assets/nn_training_contour.gif)
 
 ---
 
